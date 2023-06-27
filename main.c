@@ -187,6 +187,7 @@ item * buscar(Lista * lista, uint64_t cod)
         atual = atual->prox;
     }
     return NULL;
+
 }
 
 //########################################
@@ -214,11 +215,11 @@ void cadastrar(Lista * lista)
     while (cont < total && confirm != 's' && confirm != 'S')
     {
         printf("Produto [%d]\n", cont+1);
-        printf("[Codigo]    : ");
+        printf("[Codigo > 0]: ");
         scanf("%" PRIu64, &cod);
         getchar();
 
-        if (buscar(lista, cod) == NULL)   // valida codigo
+        if (cod > 0)   // valida codigo
         {
             printf("Nome(max 25): ");
             fgets(nome, sizeof(nome), stdin);
@@ -397,7 +398,7 @@ void atualizar(Lista * lista)
                         if (confirm == 's' || confirm == 'S')
                         {
                             produtos->valor = valor;
-                            printf("Estoque alterado com sucesso!\n");
+                            printf("Valor alterado com sucesso!\n");
                             system("pause");
                             system("cls");
                         }
@@ -470,8 +471,12 @@ void excluir (Lista * lista)
                 printf("Tem certeza que deseja excluir? (s/n)\n");
                 scanf("%c", &confirm);
                 getchar();
-                if (confirm == 's' || confirm == 'S')
+                if (confirm == 's' || confirm == 'S') {
                     apaga(lista, cod);
+                    printf("Item excluido com sucesso!\n");
+                    system("pause");
+                    system("cls");
+                }
 
             }
             else if (cod == 0)
@@ -498,37 +503,49 @@ void excluir (Lista * lista)
 
 void salvar(Lista * lista)
 {
-    FILE *arquivo = fopen("produtos.txt", "w");
-    if (arquivo == NULL)
-    {
-        printf("Erro ao abrir o arquivo.\n");
+
+    if (!lista->inicio) {
+        printf("Nenhum produto cadastrado!\n");
         system("pause");
         system("cls");
-        exit(-1);
-    }
-
-    No * atual = lista->inicio;
-
-    if (atual == NULL)
-    {
-        printf("nenhum item cadastrado!\n");
-        system("pause");
-        system("cls");
-    }
-    else
-    {
-        while (atual != NULL)
+    } else {
+        FILE *arquivo = fopen("produtos.txt", "w");
+        if (arquivo == NULL)
         {
-            fprintf(arquivo, "%" PRIu64 "\n", atual->produto->codigo);
-            fprintf(arquivo, "%s\n", atual->produto->nome);
-            fprintf(arquivo, "%.2f\n", atual->produto->valor);
-            fprintf(arquivo, "%d\n", atual->produto->estoque);
-            fprintf(arquivo, "%d\n", atual->produto->venda);
-            atual = atual->prox;
+            printf("Erro ao abrir o arquivo.\n");
+            system("pause");
+            system("cls");
+            exit(-1);
         }
-    }
 
-    fclose(arquivo);
+        No * atual = lista->inicio;
+
+        if (atual == NULL)
+        {
+            printf("nenhum item cadastrado!\n");
+            system("pause");
+            system("cls");
+        }
+        else
+        {
+            while (atual != NULL)
+            {
+                fprintf(arquivo, "%" PRIu64 "\n", atual->produto->codigo);
+                fprintf(arquivo, "%s\n", atual->produto->nome);
+                fprintf(arquivo, "%.2f\n", atual->produto->valor);
+                fprintf(arquivo, "%d\n", atual->produto->estoque);
+                fprintf(arquivo, "%d\n", atual->produto->venda);
+                atual = atual->prox;
+            }
+            
+        }
+
+        printf("Item salvo com sucesso!\n");
+        system("pause");
+        system("cls");
+
+        fclose(arquivo);
+    }
 }
 
 //########################################
@@ -587,6 +604,10 @@ void ler(Lista * lista)
             adicionarProduto(lista, produtos);
     }
 
+    printf("Arquivo lido com sucesso!\n");
+    system("pause");
+    system("cls");
+
     fclose(arquivo);
 }
 
@@ -627,27 +648,15 @@ void menuProd (Lista * lista)
             break;
         case 3:
             atualizar(lista);
-            printf("Item atualizado com sucesso!\n");
-            system("pause");
-            system("cls");
             break;
         case 4:
             excluir(lista);
-            printf("Item Excluido com sucesso!\n");
-            system("pause");
-            system("cls");
             break;
         case 5:
             salvar(lista);
-            printf("Lista Salva com sucesso!\n");
-            system("pause");
-            system("cls");
             break;
         case 6:
             ler(lista);
-            printf("Produtos lidos com sucesso!\n");
-            system("pause");
-            system("cls");
             break;
         case 7:
             system("cls");
